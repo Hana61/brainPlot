@@ -36,7 +36,7 @@ def bg_overlay_Color(bg_path, Color_path, output_path='result.png', Colormap_pat
     for i, color in enumerate(customCmap.colors):
         print(i, color)
         color.append(0 if 
-                     256/(vmax - vmin)*(-invisibleThreshould - vmin) <= 
+                     256/(vmax - vmin)*(-invisibleThreshould - vmin) < 
                      i <= 
                      256/(vmax - vmin)*(invisibleThreshould - vmin) 
                      else 1)
@@ -62,7 +62,7 @@ def bg_overlay_Color(bg_path, Color_path, output_path='result.png', Colormap_pat
                  pad=0, 
                  aspect=6,
                  shrink=2.5,
-                 ticks=[vmin, -0.09, 0.09, vmax],
+                 ticks=[vmin, -invisibleThreshould, invisibleThreshould, vmax],
                  ax=plt.subplot(4, 5, loc),
                  spacing='proportional')
     plt.axis('off')  # 隐藏坐标轴
