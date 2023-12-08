@@ -5,14 +5,14 @@ from matplotlib.colors import Normalize, ListedColormap
 import numpy as np
 
 
-def bg_overlay_Color(bg_path, Color_path, output_path='result.png', Colormap_path=None):  
+def bg_overlay_Color(bg_path, Color_path, output_path='result.png', Colormap_path=None, default_Colormap='viridis'):  
     
     bg = nib.load(bg_path)
     Color = nib.load(Color_path)
 
     z = bg.dataobj.shape[2]
-    defaultCmap = 'viridis'  # 暂时仅支持ListedColormap
-    invisibleThreshould = 0.09
+    defaultCmap = default_Colormap  # 暂时仅支持ListedColormap
+    invisibleThreshould = 0.09  # 要显示为透明的0的邻域范围
 
     # 检视3D图
     # OrthoSlicer3D(bg.dataobj).show()
@@ -33,8 +33,8 @@ def bg_overlay_Color(bg_path, Color_path, output_path='result.png', Colormap_pat
     else:
         customCmap = plt.get_cmap(defaultCmap).copy()
         
+    # 阈值之内的色彩段alpha设为0，之外的设为1
     for i, color in enumerate(customCmap.colors):
-        print(i, color)
         color.append(0 if 
                      256/(vmax - vmin)*(-invisibleThreshould - vmin) < 
                      i <= 
@@ -51,6 +51,7 @@ def bg_overlay_Color(bg_path, Color_path, output_path='result.png', Colormap_pat
 
         plt.imshow(bg_arr, cmap='gray', zorder=0)  # 在下方
         plt.imshow(Color_arr, cmap='viridis' if Colormap_path == None else customCmap, zorder=1, norm=norm)  # 在上方
+        plt.text(2., 107., 'z=%d' % (i), fontsize=7, color='white', weight='bold', zorder=2)
 
         # 隐藏坐标轴
         plt.axis('off')
@@ -73,4 +74,9 @@ def bg_overlay_Color(bg_path, Color_path, output_path='result.png', Colormap_pat
     pass
 
 if __name__ == '__main__':
-    bg_overlay_Color('bg.nii', 'Color.nii', 'result.png')
+    bg_overlay_Color(bg_path='bg.nii', 
+                     Color_path='Color.nii', 
+                     output_path='result.png', 
+                     Colormap_path='Colormap.txt', 
+                    #  default_Colormap='viridis'  # 若未指定自定义Colormap路径则需要指定默认Colormap
+                     )
